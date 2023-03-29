@@ -30,8 +30,8 @@ function checkForWinner() {
     const squareC = squares[c];
 
     if (squareA.textContent === squareB.textContent && squareB.textContent === squareC.textContent && squareA.textContent !== '') {
-      alert(`${currentPlayer}の勝利です！`);
-      location.reload();
+        alert(`${squareA.textContent}の勝利です！`);
+        location.reload();
     }
   }
 }
