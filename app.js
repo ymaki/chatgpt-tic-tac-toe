@@ -6,11 +6,15 @@ squares.forEach((square) => {
 });
 
 function handleClick(event) {
-  const square = event.target;
-  square.textContent = currentPlayer;
-  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-  checkForWinner();
-}
+    const square = event.target;
+    if (square.textContent === "") {
+      square.textContent = currentPlayer;
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      checkForWinner();
+    } else {
+      alert('このマス目には既にコマが置かれています。別のマス目を選択してください。');
+    }
+  }
 
 function checkForWinner() {
   const winningCombinations = [    [0, 1, 2],
