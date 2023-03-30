@@ -1,10 +1,43 @@
 const squares = document.querySelectorAll('.square');
-let currentPlayer = 'X';
+const startFirstButton = document.querySelector('#start-first');
+const startSecondButton = document.querySelector('#start-second');
+const giveUpButton = document.querySelector('#give-up');
+let humanPlayer = 'X';
 let aiPlayer = 'O';
+let currentPlayer = humanPlayer;
+
+startFirstButton.addEventListener('click', startFirst);
+startSecondButton.addEventListener('click', startSecond);
+giveUpButton.addEventListener('click', giveUp);
 
 squares.forEach((square) => {
   square.addEventListener('click', handleClick);
 });
+
+function startFirst() {
+  clearBoard();
+  humanPlayer = 'X';
+  aiPlayer = 'O';
+  currentPlayer = humanPlayer;
+}
+
+function startSecond() {
+  clearBoard();
+  humanPlayer = 'O';
+  aiPlayer = 'X';
+  currentPlayer = aiPlayer;
+  makeAiMove();
+}
+
+function giveUp() {
+  alert('あなたは諦めました。');
+}
+
+function clearBoard() {
+  squares.forEach((square) => {
+    square.textContent = '';
+  });
+}
 
 function handleClick(event) {
   const square = event.target;
@@ -45,9 +78,9 @@ function checkForDraw() {
 }
 
 function endGame(message) {
-  alert(message);
-  location.reload();
-}
+    alert(message);
+  }
+  
 
 function makeAiMove() {
   const [bestScore, bestMove] = minimax(Array.from(squares), aiPlayer, -Infinity, Infinity);
@@ -60,7 +93,7 @@ function makeAiMove() {
     endGame('引き分けです。');
     return;
   }
-  currentPlayer = 'X';
+  currentPlayer = humanPlayer;
 }
 
 function getEmptySquares(board) {
@@ -71,7 +104,7 @@ function getEmptySquares(board) {
 function minimax(newBoard, player, alpha, beta) {
     const emptySquares = getEmptySquares(newBoard);
   
-    if (checkForWinner(newBoard, 'X')) {
+    if (checkForWinner(newBoard, humanPlayer)) {
         return [-10, null];
     } else if (checkForWinner(newBoard, aiPlayer)) {
         return [10, null];
@@ -88,7 +121,7 @@ function minimax(newBoard, player, alpha, beta) {
         newBoard[move.index].textContent = player;
       
         if (player === aiPlayer) {
-            score = minimax(newBoard, 'X', alpha, beta)[0];
+            score = minimax(newBoard, humanPlayer, alpha, beta)[0]; //変更点
             if (score > alpha) {
                 alpha = score;
             }
