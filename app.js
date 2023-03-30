@@ -50,7 +50,7 @@ function endGame(message) {
 }
 
 function makeAiMove() {
-    const [bestScore, bestMove] = minimax(Array.from(squares), aiPlayer);
+  const [bestScore, bestMove] = minimax(Array.from(squares), aiPlayer, -Infinity, Infinity);
   squares[bestMove].textContent = aiPlayer;
   if (checkForWinner(Array.from(squares), aiPlayer)) {
     endGame(`${aiPlayer}の勝利です！`);
@@ -68,7 +68,7 @@ function getEmptySquares(board) {
     return squaresArr.filter((square) => square.textContent === "");
   }
 
-function minimax(newBoard, player) {
+function minimax(newBoard, player, alpha, beta) {
     const emptySquares = getEmptySquares(newBoard);
   
     if (checkForWinner(newBoard, 'X')) {
@@ -80,6 +80,7 @@ function minimax(newBoard, player) {
     }
       
     let moves = [];
+    let score;
       
     for (let i = 0; i < emptySquares.length; i++) {
         let move = {};
@@ -87,15 +88,24 @@ function minimax(newBoard, player) {
         newBoard[move.index].textContent = player;
       
         if (player === aiPlayer) {
-            let result = minimax(newBoard, 'X');
-            move.score = result[0];
+            score = minimax(newBoard, 'X', alpha, beta)[0];
+            if (score > alpha) {
+                alpha = score;
+            }
         } else {
-            let result = minimax(newBoard, aiPlayer);
-            move.score = result[0];
+            score = minimax(newBoard, aiPlayer, alpha, beta)[0];
+            if (score < beta) {
+                beta = score;
+            }
         }
       
         newBoard[move.index].textContent = '';
+        move.score = score;
         moves.push(move);
+      
+        if (alpha >= beta) {
+            break;
+        }
     }
       
     let bestMove;
@@ -117,4 +127,4 @@ function minimax(newBoard, player) {
         }
     }
     return [moves[bestMove].score, moves[bestMove].index];
-}      
+} 
