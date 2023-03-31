@@ -7,6 +7,7 @@ let aiPlayer = 'O';
 let currentPlayer = humanPlayer;
 let gameState = 'pre-game';
 
+const messageDiv = document.querySelector('#game-message');
 
 startFirstButton.addEventListener('click', startFirst);
 startSecondButton.addEventListener('click', startSecond);
@@ -21,7 +22,8 @@ function startFirst() {
   humanPlayer = 'X';
   aiPlayer = 'O';
   currentPlayer = humanPlayer;
-  gameState = 'in-game'; // 追加：ゲームの状態を更新する
+  gameState = 'in-game';
+  messageDiv.textContent = 'あなたが先攻です。';
 }
 
 function startSecond() {
@@ -30,11 +32,12 @@ function startSecond() {
   aiPlayer = 'X';
   currentPlayer = aiPlayer;
   gameState = 'in-game';
+  messageDiv.textContent = 'AIが先攻です。';
   makeAiMove();
 }
 
 function giveUp() {
-  alert('あなたは諦めました。');
+  messageDiv.textContent = 'あなたは諦めました。';
   gameState = 'game-over';
 }
 
@@ -63,7 +66,7 @@ function handleClick(event) {
             makeAiMove();
         }
     } else if (gameState === 'in-game') {
-        alert('このマス目には既にコマが置かれています。別のマス目を選択してください。');
+      messageDiv.textContent = 'このマス目には既にコマが置かれています。別のマス目を選択してください。';
     } else {
         return
     }
@@ -87,7 +90,7 @@ function checkForDraw() {
 }
 
 function endGame(message) {
-    alert(message);
+    messageDiv.textContent = message;
   }
   
 
