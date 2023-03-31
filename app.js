@@ -5,6 +5,8 @@ const giveUpButton = document.querySelector('#give-up');
 let humanPlayer = 'X';
 let aiPlayer = 'O';
 let currentPlayer = humanPlayer;
+let gameState = 'pre-game';
+
 
 startFirstButton.addEventListener('click', startFirst);
 startSecondButton.addEventListener('click', startSecond);
@@ -19,6 +21,7 @@ function startFirst() {
   humanPlayer = 'X';
   aiPlayer = 'O';
   currentPlayer = humanPlayer;
+  gameState = 'in-game'; // 追加：ゲームの状態を更新する
 }
 
 function startSecond() {
@@ -26,11 +29,13 @@ function startSecond() {
   humanPlayer = 'O';
   aiPlayer = 'X';
   currentPlayer = aiPlayer;
+  gameState = 'in-game';
   makeAiMove();
 }
 
 function giveUp() {
   alert('あなたは諦めました。');
+  gameState = 'game-over';
 }
 
 function clearBoard() {
@@ -41,23 +46,27 @@ function clearBoard() {
 
 function handleClick(event) {
   const square = event.target;
-  if (square.textContent === "") {
-    square.textContent = currentPlayer;
-    if (checkForWinner(Array.from(squares), currentPlayer)) {
-      endGame(`${currentPlayer}の勝利です！`);
-      return;
+    if (gameState === 'in-game' && square.textContent === "") {
+        square.textContent = currentPlayer;
+        if (checkForWinner(Array.from(squares), currentPlayer)) {
+            endGame(`${currentPlayer}の勝利です！`);
+            gameState = 'game-over';
+            return;
+        }
+        if (checkForDraw()) {
+            endGame('引き分けです。');
+            gameState = 'game-over';
+            return;
+        }
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        if (currentPlayer === aiPlayer) {
+            makeAiMove();
+        }
+    } else if (gameState === 'in-game') {
+        alert('このマス目には既にコマが置かれています。別のマス目を選択してください。');
+    } else {
+        return
     }
-    if (checkForDraw()) {
-      endGame('引き分けです。');
-      return;
-    }
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    if (currentPlayer === aiPlayer) {
-      makeAiMove();
-    }
-  } else {
-    alert('このマス目には既にコマが置かれています。別のマス目を選択してください。');
-  }
 }
 
 function checkForWinner(board, player) {
@@ -82,19 +91,25 @@ function endGame(message) {
   }
   
 
-function makeAiMove() {
-  const [bestScore, bestMove] = minimax(Array.from(squares), aiPlayer, -Infinity, Infinity);
-  squares[bestMove].textContent = aiPlayer;
-  if (checkForWinner(Array.from(squares), aiPlayer)) {
-    endGame(`${aiPlayer}の勝利です！`);
-    return;
+  function makeAiMove() {
+    if (gameState !== 'in-game') {
+      return;
+    }
+    
+    const [bestScore, bestMove] = minimax(Array.from(squares), aiPlayer, -Infinity, Infinity);
+    squares[bestMove].textContent = aiPlayer;
+    if (checkForWinner(Array.from(squares), aiPlayer)) {
+      endGame(`${aiPlayer}の勝利です！`);
+      gameState = 'game-over';
+      return;
+    }
+    if (checkForDraw()) {
+      endGame('引き分けです。');
+      gameState = 'game-over';
+      return;
+    }
+    currentPlayer = humanPlayer;
   }
-  if (checkForDraw()) {
-    endGame('引き分けです。');
-    return;
-  }
-  currentPlayer = humanPlayer;
-}
 
 function getEmptySquares(board) {
     const squaresArr = Array.from(board);
